@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: services
+  annotations:
+    {{- $ingressClass := index .Values "ingress-nginx" "controller" "ingressClass" }}
+    {{- if $ingressClass }}
+    kubernetes.io/ingress.class: {{ $ingressClass }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    #/api/aslan/project will be rewritten to /api/project before sending request to endpoint
+    ingress.kubernetes.io/rewrite-target: /api/$2
+    nginx.ingress.kubernetes.io/rewrite-target: /api/$2
+  labels:
+    {{- include "zadig.labels" . | nindent 4 }}
+spec:
+  rules:
+  {{- if eq .Values.endpoint.type "FQDN" }}
+  - host: {{ required ".Values.endpoint.FQDN is required for FQDN" .Values.endpoint.FQDN }}
+    http:
+  {{- else }}
+  - http:
+  {{- end }}
+      paths:
+      - path: /api/aslan(/|$)(.*)
+        backend:
+          serviceName: aslan
+          servicePort: {{ include "zadig.microservice.aslan.port" . }}
+      {{- if .Values.tags.enterprise }}
+      - path: /api/aslanx(/|$)(.*)
+        backend:
+          serviceName: aslanx
+          servicePort: {{ include "zadig.microservice.aslan-x.port" . }}
+      {{- end }}
+      - path: /api/podexec(/|$)(.*)
+        backend:
+          serviceName: podexec
+          servicePort: {{ include "zadig.microservice.podexec.port" . }}

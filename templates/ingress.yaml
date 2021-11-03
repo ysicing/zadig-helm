@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pe-main
+  annotations:
+    {{- $ingressClass := index .Values "ingress-nginx" "controller" "ingressClass" }}
+    {{- if $ingressClass }}
+    kubernetes.io/ingress.class: {{ $ingressClass }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  labels:
+    {{- include "zadig.labels" . | nindent 4 }}
+spec:
+  rules:
+  {{- if eq .Values.endpoint.type "FQDN" }}
+  - host: {{ required ".Values.endpoint.FQDN is required for FQDN" .Values.endpoint.FQDN }}
+    http:
+  {{- else }}
+  - http:
+  {{- end }}
+      paths:
+      - path: /api/hub
+        backend:
+          serviceName: aslan
+          servicePort: {{ include "zadig.microservice.aslan.port" . }}
+      - path: /
+        backend:
+          serviceName: zadig-portal
+          servicePort: 80
+      {{- if .Values.tags.enterprise }}
+      - path: /zadig/
+        backend:
+          serviceName: zadig-x-doc
+          servicePort: 80
+      - path: /api/collie
+        backend:
+          serviceName: collie-server
+          servicePort: 28080
+      - path: /sonar/
+        backend:
+          serviceName: sonarqube
+          servicePort: 80
+      {{- end }}
