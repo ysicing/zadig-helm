@@ -1,0 +1,2 @@
+helm package zadig
+helm repo index docs --url https://ysicing.github.io/zadig-helm
