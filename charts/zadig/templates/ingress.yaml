@@ -20,16 +20,16 @@ metadata:
   labels:
     {{- include "zadig.labels" . | nindent 4 }}
 spec:
-  {{- if and .Values.ingress-nginx.controller.ingressClass (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress-nginx.controller.ingressClass }}
+  {{- if .Values.tags.ingressController}}
+  {{- if and $ingressClass (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ $ingressClass }}
+  {{- end }}
   {{- end }}
   {{- if .Values.endpoint.tls.enabled }}
   tls:
-    {{- range .Values.ingress.tls }}
     - hosts:
         - {{ .Values.endpoint.FQDN }}
       secretName: {{ .Values.endpoint.tls.secretName }}
-    {{- end }}
   {{- end }}
   rules:
   {{- if eq .Values.endpoint.type "FQDN" }}
@@ -40,7 +40,7 @@ spec:
   {{- end }}
       paths:
       - path: /api/hub
-        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
         pathType: ImplementationSpecific
         {{- end }}
         backend:
@@ -54,7 +54,7 @@ spec:
           servicePort: {{ include "zadig.microservice.aslan.port" . }}
           {{- end }}
       - path: /
-        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
         pathType: ImplementationSpecific
         {{- end }}
         backend:
@@ -69,7 +69,7 @@ spec:
           {{- end }}
       {{- if .Values.tags.enterprise }}
       - path: /zadig/
-        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
         pathType: ImplementationSpecific
         {{- end }}
         backend:
@@ -83,7 +83,7 @@ spec:
           servicePort: 80
           {{- end }}
       - path: /api/collie
-        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
         pathType: ImplementationSpecific
         {{- end }}
         backend:
@@ -97,7 +97,7 @@ spec:
           servicePort: 28080
           {{- end }}
       - path: /sonar/
-        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
         pathType: ImplementationSpecific
         {{- end }}
         backend:
