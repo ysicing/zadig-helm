@@ -1,4 +1,10 @@
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: pe-main
@@ -14,6 +20,17 @@ metadata:
   labels:
     {{- include "zadig.labels" . | nindent 4 }}
 spec:
+  {{- if and .Values.ingress-nginx.controller.ingressClass (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress-nginx.controller.ingressClass }}
+  {{- end }}
+  {{- if .Values.endpoint.tls.enabled }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        - {{ .Values.endpoint.FQDN }}
+      secretName: {{ .Values.endpoint.tls.secretName }}
+    {{- end }}
+  {{- end }}
   rules:
   {{- if eq .Values.endpoint.type "FQDN" }}
   - host: {{ required ".Values.endpoint.FQDN is required for FQDN" .Values.endpoint.FQDN }}
@@ -23,24 +40,74 @@ spec:
   {{- end }}
       paths:
       - path: /api/hub
+        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        pathType: ImplementationSpecific
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: aslan
+            port:
+              number: {{ include "zadig.microservice.aslan.port" . }}
+          {{- else }}
           serviceName: aslan
           servicePort: {{ include "zadig.microservice.aslan.port" . }}
+          {{- end }}
       - path: /
+        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        pathType: ImplementationSpecific
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: zadig-portal
+            port:
+              number: 80
+          {{- else }}
           serviceName: zadig-portal
           servicePort: 80
+          {{- end }}
       {{- if .Values.tags.enterprise }}
       - path: /zadig/
+        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        pathType: ImplementationSpecific
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: zadig-x-doc
+            port:
+              number: 80
+          {{- else }}
           serviceName: zadig-x-doc
           servicePort: 80
+          {{- end }}
       - path: /api/collie
+        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        pathType: ImplementationSpecific
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: collie-server
+            port:
+              number: 28080
+          {{- else }}
           serviceName: collie-server
           servicePort: 28080
+          {{- end }}
       - path: /sonar/
+        {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+        pathType: ImplementationSpecific
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: sonarqube
+            port:
+              number: 80
+          {{- else }}
           serviceName: sonarqube
           servicePort: 80
+          {{- end }}
       {{- end }}
