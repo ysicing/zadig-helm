@@ -9,8 +9,8 @@ kind: Ingress
 metadata:
   name: poetry
   annotations:
-    {{- $ingressClass := index .Values "ingress-nginx" "controller" "ingressClass" }}
-      {{- if $ingressClass }}
+      {{- $ingressClass := index .Values "ingress-nginx" "controller" "ingressClass" }}
+      {{- if and $ingressClass .Values.tags.ingressController }}
       kubernetes.io/ingress.class: {{ $ingressClass }}
       {{- end }}
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "120"
@@ -23,7 +23,7 @@ metadata:
   labels:
     {{- include "zadig.labels" . | nindent 4 }}
 spec:
-  {{- if .Values.tags.ingressController}}
+  {{- if .Values.tags.ingressController }}
   {{- if and $ingressClass (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ $ingressClass }}
   {{- end }}

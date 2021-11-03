@@ -10,7 +10,7 @@ metadata:
   name: pe-main
   annotations:
     {{- $ingressClass := index .Values "ingress-nginx" "controller" "ingressClass" }}
-    {{- if $ingressClass }}
+    {{- if and $ingressClass .Values.tags.ingressController }}
     kubernetes.io/ingress.class: {{ $ingressClass }}
     {{- end }}
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "120"
