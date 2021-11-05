@@ -8,7 +8,7 @@ microservice:
     #replica: 1
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/aslan
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
       pullPolicy: Always
     serviceStartTimeout: 600
     resources:
@@ -18,7 +18,7 @@ microservice:
   cron:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/cron
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   dind:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-public/library-docker
@@ -30,21 +30,21 @@ microservice:
   hubAgent:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/hub-agent
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   hubServer:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/hub-server
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   jenkins:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/jenkins-plugin
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   kodespace:
     version: v1.1.0
   podexec:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/podexec
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   poetry:
     githubOAuth:
       clientID: ""
@@ -52,26 +52,26 @@ microservice:
     image:
       pullPolicy: Always
       repository: ccr.ccs.tencentyun.com/koderover-rc/poetry
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   predator:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/predator-plugin
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   resourceServer:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/resource-server
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
       pullPolicy: Always
   reaperPlugin:
     image:
       repository: ccr.ccs.tencentyun.com/koderover-rc/reaper-plugin
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
   warpdrive:
     replicas: 2
     image:
       pullPolicy: Always
       repository: ccr.ccs.tencentyun.com/koderover-rc/warpdrive
-      tag: 1.5.0-amd64
+      tag: 1.6.0-amd64
     resources:
       limits:
         cpu: 1
@@ -88,7 +88,7 @@ nsqd:
 ua:
   image:
     repository: ccr.ccs.tencentyun.com/koderover-rc/ua
-    tag: 1.5.0-amd64
+    tag: 1.6.0-amd64
     pullPolicy: IfNotPresent
 imagePullSecrets:
   - name: qn-registry-secret
@@ -173,7 +173,7 @@ frontend:
   image:
     pullPolicy: Always
     repository: ccr.ccs.tencentyun.com/koderover-rc/zadig-portal
-    tag: 1.5.0-amd64
+    tag: 1.6.0-amd64
   resources:
     limits:
       cpu: 1
