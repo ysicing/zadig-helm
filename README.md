@@ -3,7 +3,7 @@
 ```bash
 kubectl create ns zadig
 git clone https://github.com/ysicing/zadig-helm.git
-cd cd charts/zadig
+cd zadig-helm
 # 
 helm upgrade -i zadig -n zadig .
 ```
